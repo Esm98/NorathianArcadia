@@ -30,37 +30,47 @@ class Player(pygame.sprite.Sprite):
                 'right': Animation(spritesheet,1, 3, 4)
             }
         }
-
+        self.move_timer = 0
         self.current_animation = self.animations['walk']['down']  # Initial animation
 
     def update(self):
         keys = pygame.key.get_pressed()
-        self.is_moving = keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_UP] or keys[pygame.K_DOWN]
+        
+        if self.move_timer > 3:
+            self.is_moving = False
 
-        if self.is_moving:
-            if keys[pygame.K_SPACE]:
-                self.current_animation = self.animations['attack'][self.direction]
-            else:
-                self.current_animation = self.animations['walk'][self.direction]
+        
+        if keys[pygame.K_LEFT]:
+            self.rect.x -= PLAYER_SPEED
+            self.direction = 'left'   
+            self.is_moving = True
+            self.move_timer = 0
+        if keys[pygame.K_RIGHT]:
+            self.rect.x += PLAYER_SPEED
+            self.direction = 'right'
+            self.is_moving = True
+            self.move_timer = 0
+        if keys[pygame.K_UP]:
+            self.rect.y -= PLAYER_SPEED
+            self.direction = 'up'   
+            self.is_moving = True
+            self.move_timer = 0
+        if keys[pygame.K_DOWN]:
+            self.rect.y += PLAYER_SPEED
+            self.direction = 'down'
+            self.is_moving = True
+            self.move_timer = 0
+            
+        if keys[pygame.K_SPACE]:
+            self.current_animation = self.animations['attack'][self.direction]
+        else:self.current_animation = self.animations['walk'][self.direction]
+        self.current_animation.update(not self.is_moving)
 
-            if keys[pygame.K_LEFT]:
-                self.rect.x -= PLAYER_SPEED
-                self.direction = 'left'
-                self.is_moving = True
-            if keys[pygame.K_RIGHT]:
-                self.rect.x += PLAYER_SPEED
-                self.direction = 'right'
-                self.is_moving = True
-            if keys[pygame.K_UP]:
-                self.rect.y -= PLAYER_SPEED
-                self.direction = 'up'
-                self.is_moving = True
-            if keys[pygame.K_DOWN]:
-                self.rect.y += PLAYER_SPEED
-                self.direction = 'down'
-                self.is_moving = True
+        if not self.is_moving:
+            self.move_timer +=1
 
-        self.current_animation.update(self.is_moving)
+        print(f'Player is moving: {self.is_moving}')
 
+        self.image = self.current_animation.frames[self.current_animation.current_frame]
     def draw(self, surface):
-        self.current_animation.draw(surface, self.rect.x, self.rect.y)
+        surface.blit(self.image,self.rect)

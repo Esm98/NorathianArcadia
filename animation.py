@@ -20,11 +20,12 @@ class Animation:
         return image
 
     def update(self,is_moving):
-        print("Animation update...")
+        print(f'Before update: {self.current_frame}')
         if is_moving:
             self.current_frame = (self.current_frame + 1) % len(self.frames)
-        else:self.current_frame = 0
-        
+        else:
+            self.current_frame = 0
+        print(f'After update: {self.current_frame}')
 
     def draw(self, surface, x, y):
         surface.blit(self.frames[self.current_frame], (x, y))
