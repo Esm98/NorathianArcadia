@@ -14,14 +14,14 @@ class Player(pygame.sprite.Sprite):
         self.defense = PLAYER_DEFENSE
         
         self.direction = 'down'
-        self.is_moving = False
+       
 
         self.animations = {
             'walk': {
-                'up': Animation(spritesheet,8, 0, 8),
-                'down': Animation(spritesheet,10, 0, 8),
-                'left': Animation(spritesheet,9, 0, 8),
-                'right': Animation(spritesheet,11, 0, 8)
+                'up': Animation(spritesheet,0, 8, 8),
+                'down': Animation(spritesheet,0, 10, 8),
+                'left': Animation(spritesheet,0, 9, 8),
+                'right': Animation(spritesheet,0, 11, 8)
             },
             'attack': {
                 'up': Animation(spritesheet,1, 0, 4),
@@ -30,47 +30,40 @@ class Player(pygame.sprite.Sprite):
                 'right': Animation(spritesheet,1, 3, 4)
             }
         }
-        self.move_timer = 0
+        
         self.current_animation = self.animations['walk']['down']  # Initial animation
 
     def update(self):
         keys = pygame.key.get_pressed()
         
-        if self.move_timer > 3:
-            self.is_moving = False
+        
 
         
+        
+
         if keys[pygame.K_LEFT]:
             self.rect.x -= PLAYER_SPEED
-            self.direction = 'left'   
-            self.is_moving = True
-            self.move_timer = 0
+            self.direction = 'left'
         if keys[pygame.K_RIGHT]:
             self.rect.x += PLAYER_SPEED
             self.direction = 'right'
-            self.is_moving = True
-            self.move_timer = 0
         if keys[pygame.K_UP]:
             self.rect.y -= PLAYER_SPEED
-            self.direction = 'up'   
-            self.is_moving = True
-            self.move_timer = 0
+            self.direction = 'up'
         if keys[pygame.K_DOWN]:
             self.rect.y += PLAYER_SPEED
             self.direction = 'down'
-            self.is_moving = True
-            self.move_timer = 0
-            
+
         if keys[pygame.K_SPACE]:
             self.current_animation = self.animations['attack'][self.direction]
-        else:self.current_animation = self.animations['walk'][self.direction]
-        self.current_animation.update(not self.is_moving)
+        else:
+            self.current_animation = self.animations['walk'][self.direction]
 
-        if not self.is_moving:
-            self.move_timer +=1
-
-        print(f'Player is moving: {self.is_moving}')
+        self.current_animation.update()  # Now we don't need to pass is_moving
 
         self.image = self.current_animation.frames[self.current_animation.current_frame]
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+        
     def draw(self, surface):
         surface.blit(self.image,self.rect)
