@@ -54,12 +54,14 @@ class Player(pygame.sprite.Sprite):
             self.rect.y += PLAYER_SPEED
             self.direction = 'down'
 
+        is_moving = keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_UP] or keys[pygame.K_DOWN]
+
         if keys[pygame.K_SPACE]:
             self.current_animation = self.animations['attack'][self.direction]
         else:
             self.current_animation = self.animations['walk'][self.direction]
 
-        self.current_animation.update()  # Now we don't need to pass is_moving
+        self.current_animation.update(is_moving)  # Now we don't need to pass is_moving
 
         self.image = self.current_animation.frames[self.current_animation.current_frame]
         self.rect = self.image.get_rect(center=self.rect.center)
