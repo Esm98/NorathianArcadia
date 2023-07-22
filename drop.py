@@ -9,3 +9,6 @@ class Drop(pygame.sprite.Sprite):
         self.image.fill(BLUE)
         self.rect = self.image.get_rect(center=(x, y))
         self.loot = random.choice(LOOT)
+
+    def draw(self, surface):
+        surface.blit(self.image,self.rect)

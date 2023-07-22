@@ -5,6 +5,7 @@ from enemy import Enemy
 from sword import Sword
 from drop import Drop
 from utils import draw_text
+from weapon import Weapon
 
 def main():
     pygame.init()
@@ -14,10 +15,12 @@ def main():
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
     swords = pygame.sprite.Group()  
-    drops = pygame.sprite.Group()  # New group for drops
+    drops = pygame.sprite.Group()
+    weapons = pygame.sprite.Group()  # New group for drops
 
     spritesheet = pygame.image.load('defaultChar.png')
     player = Player(spritesheet)
+    player.equipped_weapon = Sword
     all_sprites.add(player)
 
     enemy_timer = 0
@@ -28,10 +31,11 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:  # Press space to attack
-                    sword = Sword(player)
-                    all_sprites.add(sword)
-                    swords.add(sword)  # Add sword to swords group
+                if event.key == pygame.K_q:
+                    if player.equipped_weapon is not None:  # Press space to attack
+                        weapon = player.equipped_weapon(player)
+                        all_sprites.add(weapon)
+                        weapons.add(weapon)  # Add sword to swords group
 
         # Spawn enemies
         enemy_timer += 1
@@ -46,7 +50,7 @@ def main():
         # Check for collisions between player and enemies
         if pygame.sprite.spritecollide(player, enemies, True):  # True means the enemy sprite will be deleted upon collision
             player.health -= 10  # Arbitrary number, replace with enemy's attack strength minus player's defense, for example
-        hits = pygame.sprite.groupcollide(swords, enemies, True, True)
+        hits = pygame.sprite.groupcollide(weapons, enemies, True, True)
         for hit in hits:
            # When an enemy is hit, it drops a loot item
             drop = Drop(hit.rect.x, hit.rect.y)
