@@ -6,6 +6,7 @@ from sword import Sword
 from drop import Drop
 from utils import draw_text
 from weapon import Weapon
+from undead import Undead
 
 def main():
     pygame.init()
@@ -22,6 +23,9 @@ def main():
     player = Player(spritesheet)
     player.equipped_weapon = Sword
     all_sprites.add(player)
+
+    enemyspritesheet = pygame.image.load('decayingSkeleton.png')
+    enemy = Enemy(enemyspritesheet,100,100)
 
     enemy_timer = 0
 
@@ -40,7 +44,8 @@ def main():
         # Spawn enemies
         enemy_timer += 1
         if enemy_timer >= ENEMY_SPAWN_RATE:
-            enemy = Enemy()
+            spritesheet = pygame.image.load('decayingSkeleton.png')
+            enemy = Undead(spritesheet,100,100)
             all_sprites.add(enemy)
             enemies.add(enemy)
             enemy_timer = 0
