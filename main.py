@@ -6,7 +6,7 @@ from sword import Sword
 from drop import Drop
 from utils import draw_text
 from weapon import Weapon
-from undead import Undead
+from enemy import Undead
 
 def main():
     pygame.init()
@@ -15,17 +15,22 @@ def main():
 
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
+
     swords = pygame.sprite.Group()  
     drops = pygame.sprite.Group()
-    weapons = pygame.sprite.Group()  # New group for drops
+    weapons = pygame.sprite.Group()
+    undeads = pygame.sprite.Group()  # New group for drops
 
     spritesheet = pygame.image.load('defaultChar.png')
     player = Player(spritesheet)
     player.equipped_weapon = Sword
     all_sprites.add(player)
 
-    enemyspritesheet = pygame.image.load('decayingSkeleton.png')
-    enemy = Enemy(enemyspritesheet,100,100)
+    undead_spritesheet = pygame.image.load('decayingSkeleton.png')
+    undead = Undead(undead_spritesheet, 100, 100, player)
+    undead.player = player
+    all_sprites.add(undead)
+    enemies.add(undead)
 
     enemy_timer = 0
 
@@ -40,21 +45,34 @@ def main():
                         weapon = player.equipped_weapon(player)
                         all_sprites.add(weapon)
                         weapons.add(weapon)  # Add sword to swords group
+                     
 
+        
+
+            
         # Spawn enemies
         enemy_timer += 1
         if enemy_timer >= ENEMY_SPAWN_RATE:
-            spritesheet = pygame.image.load('decayingSkeleton.png')
-            enemy = Undead(spritesheet,100,100)
-            all_sprites.add(enemy)
-            enemies.add(enemy)
+            undead_spritesheet = pygame.image.load('decayingSkeleton.png')
+            enemy = Undead(undead_spritesheet,100,100,player)
+            undead.player = player
+            all_sprites.add(undead)
+            enemies.add(undead)
             enemy_timer = 0
 
-        all_sprites.update()
+        player.update(enemies)
+        for sprite in all_sprites:
+            if sprite == player:
+                sprite.update(enemies)
+            else:
+                sprite.update()
 
         # Check for collisions between player and enemies
-        if pygame.sprite.spritecollide(player, enemies, True):  # True means the enemy sprite will be deleted upon collision
-            player.health -= 10  # Arbitrary number, replace with enemy's attack strength minus player's defense, for example
+        collisions = pygame.sprite.spritecollide(player, enemies, False)
+        for enemy in collisions:
+            if enemy.state == 'attack':
+                enemy.attack(player)
+
         hits = pygame.sprite.groupcollide(weapons, enemies, True, True)
         for hit in hits:
            # When an enemy is hit, it drops a loot item
@@ -62,11 +80,14 @@ def main():
             all_sprites.add(drop)
             drops.add(drop) 
         # Check player's health
-        if player.health <= 0:
-            draw_text(screen, "YOU DIED", 50, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-            pygame.display.flip()
-            pygame.time.wait(3000)
-            running = False
+        if player.health <= 0 and not player.is_dead:
+                player.is_dead = True
+                player.current_animation = player.animations['death']['die'] 
+
+
+        if player.is_dead:
+            player.current_animation.update(True)
+
 
         # Draw everything
         screen.fill((255, 255, 255))
@@ -80,6 +101,12 @@ def main():
 
         pygame.display.flip()
         clock.tick(FPS)
+
+        if player.is_dead and player.is_death_animation_finished():
+            draw_text(screen, "YOU DIED",50,SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+            pygame.display.flip()
+            pygame.time.wait(3000)
+            running = False
 
     pygame.quit()
 

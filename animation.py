@@ -9,28 +9,29 @@ SPRITE_HEIGHT = 64
 
 
 class Animation:
-    def __init__(self, spritesheet, column, row, num_frames):
+    def __init__(self, spritesheet, column, row, num_frames,frame_delay=20):
         self.frames = [self.get_sprite(column + i, row, spritesheet) for i in range(num_frames)]
         self.current_frame = 0
-        self.frame_delay = 0
+        self.frame_delay = frame_delay
+        self.tick_count = 0
 
     def get_sprite(self, x, y, spritesheet):
         rect = pygame.Rect(x * SPRITE_WIDTH, y * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT)
         image = pygame.Surface(rect.size, pygame.SRCALPHA)  # Use SRCALPHA to preserve transparency
         image.blit(spritesheet, (0, 0), rect)
 
-        scaled_image = pygame.transform.scale(image, (SPRITE_WIDTH*1.5, SPRITE_HEIGHT*1.5))  # 2 is the scaling factor
+        scaled_image = pygame.transform.scale(image, (SPRITE_WIDTH, SPRITE_HEIGHT))  # 2 is the scaling factor
 
         return scaled_image
 
 
     def update(self,is_moving):
-        self.frame_delay = (self.frame_delay + 1) % 5  # Update frame every 5 calls
-        if self.frame_delay == 0:
+        if self.tick_count % self.frame_delay == 0:  # only update frame after frame_delay ticks
             if is_moving:
                 self.current_frame = (self.current_frame + 1) % len(self.frames)
             else:
                 self.current_frame = 0  # Reset to the first frame if not moving
+        self.tick_count += 1  
 
 
     def draw(self, surface, x, y):

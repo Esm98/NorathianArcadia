@@ -7,15 +7,21 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
         self.image.fill(GREEN)
-        self.rect = self.image.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        self.rect = pygame.Rect(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 64, 64)  # Assuming the animation frame size is 64x64
+        self.hitbox = self.image.get_rect().inflate(-10, -10)  # Decrease the size of the hitbox by 10 pixels on each side
+
 
         self.health = PLAYER_HEALTH
+        self.is_dead = False
+
         self.attack = PLAYER_ATTACK
         self.defense = PLAYER_DEFENSE
         
         self.equipped_weapon = None
 
         self.direction = 'down'
+
+        self.death_timer = 0
        
 
         self.animations = {
@@ -50,56 +56,95 @@ class Player(pygame.sprite.Sprite):
                 'right': Animation(spritesheet,0, 3, 6)
             },
             'death': {
-                'die': Animation(spritesheet,0, 20, 5)
+                'die': Animation(spritesheet,0, 20, 6,frame_delay=20)
             }
 
         }
         
         self.current_animation = self.animations['walk']['down']  # Initial animation
 
-    def update(self):
+
+    def is_death_animation_finished(self):
+        if self.is_dead and self.current_animation.current_frame == len(self.current_animation.frames) - 1:
+            return True
+        return False
+
+    def update(self,enemies=None):
         keys = pygame.key.get_pressed()
-        
+
+        dx, dy = 0, 0
         if keys[pygame.K_a]:
-            self.rect.x -= PLAYER_SPEED
+            dx -= PLAYER_SPEED
             self.direction = 'left'
         if keys[pygame.K_d]:
-            self.rect.x += PLAYER_SPEED
+            dx += PLAYER_SPEED
             self.direction = 'right'
         if keys[pygame.K_w]:
-            self.rect.y -= PLAYER_SPEED
+            dy -= PLAYER_SPEED
             self.direction = 'up'
         if keys[pygame.K_s]:
-            self.rect.y += PLAYER_SPEED
+            dy += PLAYER_SPEED
             self.direction = 'down'
-        
+
+        # Attempt to move in the X direction
+        new_x = self.rect.x + dx
+        # Temporarily move player's rect
+        old_x = self.rect.x
+        self.rect.x = new_x
+        # Check for collisions
+        collision = any(self.rect.colliderect(enemy.hitbox) for enemy in enemies)
+        # If collision occurred, reset x
+        if collision:
+            self.rect.x = old_x
+        # Attempt to move in the Y direction
+        new_y = self.rect.y + dy
+        # Temporarily move player's rect
+        old_y = self.rect.y
+        self.rect.y = new_y
+
+        # Check for collisions
+        collision = any(self.rect.colliderect(enemy.hitbox) for enemy in enemies)
+        # If collision occurred, reset y
+        if collision:
+            self.rect.y = old_y
+
+        self.hitbox.center = self.rect.center
+
         is_attacking = keys[pygame.K_q] or keys[pygame.K_e] or keys[pygame.K_r] or keys[pygame.K_f]
         is_moving = keys[pygame.K_a] or keys[pygame.K_d] or keys[pygame.K_w] or keys[pygame.K_s]
 
-        if keys[pygame.K_q]:
-            self.current_animation = self.animations['swing'][self.direction]
-        elif keys[pygame.K_e]:
-        # Assuming you have 'shoot' animation
-            self.current_animation = self.animations['shoot'][self.direction]
-        elif keys[pygame.K_r]:
-        # Assuming you have 'cast' animation
-            self.current_animation = self.animations['cast'][self.direction]
-        elif keys[pygame.K_f]:
-            self.current_animation = self.animations['thrust'][self.direction]
-        elif is_moving:
-            self.current_animation = self.animations['walk'][self.direction]
+        if self.is_dead:
+            if self.current_animation.current_frame == len(self.current_animation.frames) - 1:
+                self.kill()
+            else:
+                self.current_animation.update(True)
         else:
-            self.current_animation.update(False)  # Update with is_moving = False
+            if keys[pygame.K_q]:
+                self.current_animation = self.animations['swing'][self.direction]
+            elif keys[pygame.K_e]:
+            # Assuming you have 'shoot' animation
+                self.current_animation = self.animations['shoot'][self.direction]
+            elif keys[pygame.K_r]:
+            # Assuming you have 'cast' animation
+                self.current_animation = self.animations['cast'][self.direction]
+            elif keys[pygame.K_f]:
+                self.current_animation = self.animations['thrust'][self.direction]
+            elif is_moving:
+                self.current_animation = self.animations['walk'][self.direction]
+            else:
+                self.current_animation.update(False)  # Update with is_moving = False
 
+            if self.health <= 0:
+                self.is_dead = True
+                self.current_animation = self.animations['death']['die']
 
-
-
-
-        self.current_animation.update(is_moving or is_attacking)  # Now we don't need to pass is_moving
+            self.current_animation.update(is_moving or is_attacking) 
 
         self.image = self.current_animation.frames[self.current_animation.current_frame]
         self.rect = self.image.get_rect(center=self.rect.center)
 
+    
         
     def draw(self, surface):
         surface.blit(self.image,self.rect)
+        pygame.draw.rect(surface,RED,self.rect,2)
