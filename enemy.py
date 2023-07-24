@@ -16,7 +16,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.Surface((ENEMY_SIZE, ENEMY_SIZE))
         self.image.fill(RED)
         self.rect = pygame.Rect(self.x, self.y, 64, 64)  # Assuming the animation frame size is 64x64
-        self.hitbox = self.image.get_rect().inflate(-10, -10)  # Decrease the size of the hitbox by 10 pixels on each side
+        self.hitbox = self.image.get_rect().inflate(-10, +10)  # Decrease the size of the hitbox by 10 pixels on each side
 
 
 
@@ -97,8 +97,8 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)  # Update the rect to match the image's size and position
 
     def draw(self, surface):
-        surface.blit(self.image, (self.rect.x,self.rect.y))
-        pygame.draw.rect(surface, BLUE,self.rect,2)
+        surface.blit(self.image, self.rect)
+        pygame.draw.rect(surface, BLUE,self.hitbox,2)
 
 class Undead(Enemy):
     def __init__(self, spritesheet, x, y,player):
@@ -171,6 +171,6 @@ class Undead(Enemy):
 
         # Update self.rect to match the image's size and position
         self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y))
-        self.hitbox.topleft = self.rect.topleft
+        self.hitbox.center = self.rect.center
 
         self.update_image()
