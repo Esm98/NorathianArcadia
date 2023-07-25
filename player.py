@@ -5,9 +5,11 @@ from animation import Animation
 class Player(pygame.sprite.Sprite):
     def __init__(self, spritesheet):
         super().__init__()
+        player_initial_x = 2576 - 64
+        player_initial_y = 2924 - 64
         self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
         self.image.fill(GREEN)
-        self.rect = pygame.Rect(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 64, 64)  # Assuming the animation frame size is 64x64
+        self.rect = pygame.Rect(player_initial_x, player_initial_y, 64, 64)
         self.hitbox = self.image.get_rect().inflate(-10, +10)  # Decrease the size of the hitbox by 10 pixels on each side
 
 

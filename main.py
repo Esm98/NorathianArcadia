@@ -51,7 +51,8 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     
-    
+    world_width = 2576
+    world_height = 2924
     start_screen(screen)
 
     all_sprites = pygame.sprite.Group()
@@ -79,8 +80,8 @@ def main():
 
 
      
-    camera = Camera(512, 512)
-    background = pygame.image.load('dungeonFloorTest.png')
+    camera = Camera(world_width, world_height)
+    background = pygame.image.load('befallen_sketch2.png')
 
     running = True
     while running:
@@ -94,12 +95,7 @@ def main():
                     if player.equipped_weapon is not None:  # Press space to attack
                         weapon = player.equipped_weapon(player)
                         all_sprites.add(weapon)
-                        weapons.add(weapon)  # Add sword to swords group
-                     
-
-        
-
-            
+                        weapons.add(weapon)  # Add sword to swords group           
         # Spawn enemies
         enemy_timer += 1
         if enemy_timer >= ENEMY_SPAWN_RATE:
@@ -116,6 +112,7 @@ def main():
                 sprite.update(enemies)
             else:
                 sprite.update()
+                camera.update(player)
 
         # Check for collisions between player and enemies
         collisions = pygame.sprite.spritecollide(player, enemies, False)
@@ -138,16 +135,17 @@ def main():
         if player.is_dead:
             player.current_animation.update(True)
 
-
+       
         # Draw everything
         #screen.fill((255, 255, 255))
         for sprite in all_sprites:
-            sprite.draw(screen)
+            camera.draw(sprite,screen)
+            #sprite.draw(screen)
             
             
         # Draw health bar
-        pygame.draw.rect(screen, GREEN, (20, 20, player.health, 20))
-        pygame.draw.rect(screen, WHITE, (20, 20, PLAYER_HEALTH, 20), 2)
+        pygame.draw.rect(screen, GREEN, (20 - camera.camera.x, 20 - camera.camera.y, player.health, 20))
+        pygame.draw.rect(screen, WHITE, (20 - camera.camera.x, 20 - camera.camera.y, PLAYER_HEALTH, 20), 2)
 
         pygame.display.flip()
         clock.tick(FPS)

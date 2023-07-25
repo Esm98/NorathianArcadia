@@ -1,5 +1,5 @@
 # Game Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+SCREEN_WIDTH, SCREEN_HEIGHT = 900, 900
 FPS = 60
 
 # Player Constants
