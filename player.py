@@ -146,5 +146,7 @@ class Player(pygame.sprite.Sprite):
     
         
     def draw(self, surface):
-        surface.blit(self.image,self.rect)
-        pygame.draw.rect(surface,RED,self.hitbox,2)
+        surface.blit(self.image, self.rect)
+        pygame.draw.rect(surface,RED, self.hitbox,2)
+
+    

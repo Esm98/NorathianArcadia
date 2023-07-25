@@ -7,11 +7,52 @@ from drop import Drop
 from utils import draw_text
 from weapon import Weapon
 from enemy import Undead
+from camera import Camera
+
+
+def start_screen(screen):
+    running = True
+    while running:
+        screen.fill((0,0,0))  # Fill the screen with black
+        draw_text(screen, "Norathian Arcadia", 64, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4)  # Draw the title
+        draw_text(screen, "Press a key to start", 22, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Draw the instructions
+        pygame.display.flip()  # Update the display
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYUP:
+                running = False   
+
+def game_over_screen(screen):
+    running = True
+    while running:
+        screen.fill((0,0,0))  # Fill the screen with black
+        draw_text(screen, "GAME OVER", 64, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4)  # Draw the game over text
+        draw_text(screen, "Press a key to play again", 22, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Draw the instructions
+        pygame.display.flip()  # Update the display
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYUP:
+                running = False
+
+
+
+
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+    
+    
+    start_screen(screen)
 
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
@@ -34,8 +75,17 @@ def main():
 
     enemy_timer = 0
 
+
+
+
+     
+    camera = Camera(512, 512)
+    background = pygame.image.load('dungeonFloorTest.png')
+
     running = True
     while running:
+        camera.update(player)
+        screen.blit(background,(0,0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -90,11 +140,11 @@ def main():
 
 
         # Draw everything
-        screen.fill((255, 255, 255))
+        #screen.fill((255, 255, 255))
         for sprite in all_sprites:
             sprite.draw(screen)
-
-
+            
+            
         # Draw health bar
         pygame.draw.rect(screen, GREEN, (20, 20, player.health, 20))
         pygame.draw.rect(screen, WHITE, (20, 20, PLAYER_HEALTH, 20), 2)
@@ -108,7 +158,10 @@ def main():
             pygame.time.wait(3000)
             running = False
 
+    game_over_screen(screen)
+
     pygame.quit()
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
