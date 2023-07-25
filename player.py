@@ -5,8 +5,9 @@ from animation import Animation
 class Player(pygame.sprite.Sprite):
     def __init__(self, spritesheet):
         super().__init__()
-        player_initial_x = 2576 - 64
-        player_initial_y = 2924 - 64
+        player_initial_x = SCREEN_WIDTH / 2
+        player_initial_y = SCREEN_HEIGHT / 2
+
         self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
         self.image.fill(GREEN)
         self.rect = pygame.Rect(player_initial_x, player_initial_y, 64, 64)

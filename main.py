@@ -7,7 +7,7 @@ from drop import Drop
 from utils import draw_text
 from weapon import Weapon
 from enemy import Undead
-from camera import Camera
+
 
 
 def start_screen(screen):
@@ -62,6 +62,7 @@ def main():
     drops = pygame.sprite.Group()
     weapons = pygame.sprite.Group()
     undeads = pygame.sprite.Group()  # New group for drops
+    backgrounds =pygame.sprite.Group()
 
     spritesheet = pygame.image.load('defaultChar.png')
     player = Player(spritesheet)
@@ -80,13 +81,13 @@ def main():
 
 
      
-    camera = Camera(world_width, world_height)
+    
     background = pygame.image.load('befallen_sketch2.png')
 
     running = True
     while running:
-        camera.update(player)
-        screen.blit(background,(0,0))
+        
+        screen.blit(background,(-1500,-1900))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -112,7 +113,7 @@ def main():
                 sprite.update(enemies)
             else:
                 sprite.update()
-                camera.update(player)
+                
 
         # Check for collisions between player and enemies
         collisions = pygame.sprite.spritecollide(player, enemies, False)
@@ -135,17 +136,22 @@ def main():
         if player.is_dead:
             player.current_animation.update(True)
 
+
+        # Draw health bar
+        # Draw health bar
+        health_bar_width = PLAYER_HEALTH * 2  # for example, if each health point corresponds to 2 pixels
+        pygame.draw.rect(screen, GREEN, (20, 20, player.health*2, 20))
+        pygame.draw.rect(screen, WHITE, (20, 20, PLAYER_HEALTH * 2, 20), 2)
        
         # Draw everything
         #screen.fill((255, 255, 255))
         for sprite in all_sprites:
-            camera.draw(sprite,screen)
-            #sprite.draw(screen)
+           
+            sprite.draw(screen)
             
             
-        # Draw health bar
-        pygame.draw.rect(screen, GREEN, (20 - camera.camera.x, 20 - camera.camera.y, player.health, 20))
-        pygame.draw.rect(screen, WHITE, (20 - camera.camera.x, 20 - camera.camera.y, PLAYER_HEALTH, 20), 2)
+       
+
 
         pygame.display.flip()
         clock.tick(FPS)
