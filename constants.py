@@ -17,7 +17,7 @@ SWORD_LIFETIME = 10  # Number of frames the sword stays on screen
 ENEMY_SIZE = 50
 ENEMY_SPEED = 3
 ENEMY_SPAWN_RATE = 100  # The smaller this number, the more often enemies will spawn
-
+PATROL_LIMIT = 50
 # Drop Constants
 DROP_SIZE = 15
 LOOT = ['gold', 'xp', 'greaves', 'boots', 'breastplate', 'vambracers', 'gauntlets', 'helmet', 'weapon']

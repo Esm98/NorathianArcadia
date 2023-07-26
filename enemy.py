@@ -17,7 +17,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image.fill(RED)
         self.rect = pygame.Rect(self.x, self.y, 64, 64)  # Assuming the animation frame size is 64x64
         self.hitbox = self.image.get_rect().inflate(-10, +10)  # Decrease the size of the hitbox by 10 pixels on each side
-
+        
 
 
         self.direction = 'down'
@@ -66,6 +66,7 @@ class Enemy(pygame.sprite.Sprite):
         self.attack_delay = 2000
         self.is_attacking = False
         self.attack_timer = 0
+        
 
     @staticmethod
     def get_direction_from_vector(vector):
@@ -102,10 +103,11 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self, surface, offset_x, offset_y):
         surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
-        pygame.draw.rect(surface, RED, self.hitbox.move(offset_x, offset_y), 2)
+        pygame.draw.rect(surface, BLUE, self.hitbox.move(offset_x, offset_y), 2)
 
 
 class Undead(Enemy):
+    dead_enemies = 0
     def __init__(self, spritesheet, x, y,player):
         super().__init__(spritesheet, x, y,player)
         
@@ -120,21 +122,60 @@ class Undead(Enemy):
         self.player = player
         self.patrol_counter = 0
         self.attack_delay = 2000
+
+        self.world_width = 2213
+        self.world_height = 2924
+        self.patrol_direction = Vector2(1, 0)  # Initially move to the right
+        self.patrol_distance = 0  # Initially we haven't moved yet
        
+    def create_undeads(player, undead_spritesheet):
+        undeads = pygame.sprite.Group()
+
+        
+
+        undead1 = Undead(undead_spritesheet, 1597, 2815, player)  
+        undead2 = Undead(undead_spritesheet, 1597, 2500, player)  
+        undead3 = Undead(undead_spritesheet, 1597, 2000, player) 
+        undead4 = Undead(undead_spritesheet, 1597, 1500, player)  
+
+        undeads.add(undead1)
+        undeads.add(undead2)
+        undeads.add(undead3)
+        undeads.add(undead4)
+
+        return undeads
 
 
-    def update(self):  # Pass player instance for distance calculation
+
+    def update(self,walls = None,enemies = None):  # Pass player instance for distance calculation
         if self.player is not None:
             player_position = Vector2(self.player.rect.x, self.player.rect.y)
             self_position = Vector2(self.rect.x, self.rect.y)
 
+            distance_to_player = player_position.distance_to(self_position)
+            print(f"Distance to player: {distance_to_player}")  # Debug line
+
             # Check distance to player
-            if player_position.distance_to(self_position) <= self.agro_radius:
+            if distance_to_player <= self.agro_radius:
+                print("Switching to attack state")  # Debug line
                 self.state = 'attack'
             else:
-             self.state = 'patrol'
+                print("Switching to patrol state")  # Debug line
+                self.state = 'patrol'
+
 
         if self.state == 'patrol':
+            old_x, old_y = self.rect.x, self.rect.y
+            self.rect.x += self.patrol_direction.x * ENEMY_SPEED
+            self.rect.y += self.patrol_direction.y * ENEMY_SPEED
+
+            self.patrol_distance += ENEMY_SPEED
+            if self.patrol_distance >= PATROL_LIMIT:
+                # If we've moved far enough, switch direction and reset distance
+                self.patrol_direction *= -1
+                self.patrol_distance = 0
+
+
             if self.direction == 'up':
                 self.rect.y -= ENEMY_SPEED
             elif self.direction == 'down':
@@ -144,14 +185,22 @@ class Undead(Enemy):
             elif self.direction == 'right':
                 self.rect.x += ENEMY_SPEED
 
+             # Check for collisions
+            if not any(self.rect.colliderect(enemy.hitbox) for enemy in enemies):
+                self.rect.x, self.rect.y = old_x, old_y
+                self.state = 'patrol'
+            if any(self.rect.colliderect(wall.rect) for wall in walls):
+                self.rect.x, self.rect.y = old_x, old_y   
+
             # Randomly change patrol direction
             if randint(1, 100) <= 3:  # 3% chance to change direction each frame
                 self.direction = choice(self.directions)
 
             self.current_animation = self.animations['walk'][self.direction]
-
+            self.current_animation.update(True)
         elif self.state == 'attack':
         # Move towards player
+            old_x, old_y = self.rect.x, self.rect.y
             direction_vector = (player_position - self_position)
             if direction_vector.length() > 0:  # Only normalize if the vector is not a zero vector
                 direction_vector = direction_vector.normalize()
@@ -166,6 +215,14 @@ class Undead(Enemy):
             else:
                 self.rect.x += direction_vector.x * ENEMY_SPEED
                 self.rect.y += direction_vector.y * ENEMY_SPEED
+
+            if any(self.rect.colliderect(enemy.hitbox) for enemy in enemies if enemy != self) or \
+            any(self.rect.colliderect(wall.rect) for wall in walls):
+                self.rect.x, self.rect.y = old_x, old_y  # Move back to the old position
+
+            # Check for boundaries
+            self.rect.x = max(0, min(self.rect.x, self.world_width - self.rect.width))
+            self.rect.y = max(0, min(self.rect.y, self.world_height - self.rect.height))
 
             if self.is_attacking:  # Check if we are attacking
                 self.current_animation = self.animations['swing'][self.direction]

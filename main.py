@@ -82,19 +82,21 @@ def main():
     player.equipped_weapon = Sword
     all_sprites.add(player)
 
-    undead = Undead(undead_spritesheet, 100, 100, player)
+    undead = Undead.create_undeads(player,undead_spritesheet)
     undead.player = player
     all_sprites.add(undead)
     enemies.add(undead)
 
-    left = 1171
-    top = 2912
-    width = 2113 - 1171  # right - left
-    height = 5  # since the top and bottom y-coordinate is the same
-    walls = pygame.sprite.Group()
-    wall = Wall(left, top, width, height)
-    walls.add(wall)
-
+    #left = 1171
+    #top = 2912
+    #width = 2113 - 1171  # right - left
+    #height = 5  # since the top and bottom y-coordinate is the same
+    
+    #walls = pygame.sprite.Group()
+    #wall = Wall(left, top, width, height)
+    #walls.add(wall)
+    walls = Wall.create_walls()
+    #all_sprites.add(walls)
 
 
     enemy_timer = 0
@@ -121,18 +123,24 @@ def main():
         # Spawn enemies
         enemy_timer += 1
         if enemy_timer >= ENEMY_SPAWN_RATE:
-            enemy = Undead(undead_spritesheet, 100, 100, player)
-            undead.player = player
-            all_sprites.add(undead)
-            enemies.add(undead)
+            if len(enemies) == 0:  # Check if all enemies have been destroyed
+                undead = Undead.create_undeads(player,undead_spritesheet)
+                undead.player = player  # Set the player for each undead
+                all_sprites.add(undead)  # Add each undead to all_sprites
+                enemies.add(undead)  # Add each undead to enemies
             enemy_timer = 0
 
+        
         # Update sprites
         for sprite in all_sprites:
-            if sprite != player:
+            if isinstance(sprite, Undead):
+                sprite.update(walls=walls, enemies=enemies)
+            elif sprite != player:
                 sprite.update()
         player.update(enemies,walls)
 
+
+      
         # Check for collisions between player and enemies
         collisions = pygame.sprite.spritecollide(player, enemies, False)
         for enemy in collisions:
