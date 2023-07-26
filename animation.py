@@ -9,7 +9,7 @@ SPRITE_HEIGHT = 64
 
 
 class Animation:
-    def __init__(self, spritesheet, column, row, num_frames,frame_delay=20):
+    def __init__(self, spritesheet, column, row, num_frames,frame_delay=5):
         self.frames = [self.get_sprite(column + i, row, spritesheet) for i in range(num_frames)]
         self.current_frame = 0
         self.frame_delay = frame_delay

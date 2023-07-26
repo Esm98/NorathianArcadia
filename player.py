@@ -5,8 +5,12 @@ from animation import Animation
 class Player(pygame.sprite.Sprite):
     def __init__(self, spritesheet):
         super().__init__()
-        player_initial_x = SCREEN_WIDTH / 2
-        player_initial_y = SCREEN_HEIGHT / 2
+        
+        world_width = 2576
+        world_height = 2924
+        player_initial_x = world_width 
+        player_initial_y = world_height
+
 
         self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
         self.image.fill(GREEN)
@@ -89,6 +93,11 @@ class Player(pygame.sprite.Sprite):
             dy += PLAYER_SPEED
             self.direction = 'down'
 
+        world_width = 2576
+        world_height = 2924
+        self.rect.x = max(0, min(self.rect.x, world_width - self.rect.width))
+        self.rect.y = max(0, min(self.rect.y, world_height - self.rect.height)) 
+
         # Attempt to move in the X direction
         new_x = self.rect.x + dx
         # Temporarily move player's rect
@@ -148,8 +157,11 @@ class Player(pygame.sprite.Sprite):
 
     
         
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-        pygame.draw.rect(surface,RED, self.hitbox,2)
+    #def draw(self, surface):
+        #surface.blit(self.image, self.rect)
+        #pygame.draw.rect(surface,RED, self.hitbox,2)
 
+    def draw(self, surface, offset_x, offset_y):
+        surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
+        pygame.draw.rect(surface, RED, self.hitbox.move(offset_x, offset_y), 2)
     

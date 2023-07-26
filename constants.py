@@ -5,7 +5,7 @@ FPS = 60
 # Player Constants
 PLAYER_SIZE = 50
 PLAYER_HEALTH = 100
-PLAYER_SPEED = 2
+PLAYER_SPEED = 3
 PLAYER_ATTACK = 10
 PLAYER_DEFENSE = 10
 
@@ -15,7 +15,7 @@ SWORD_LIFETIME = 10  # Number of frames the sword stays on screen
 
 # Enemy Constants
 ENEMY_SIZE = 50
-ENEMY_SPEED = 2
+ENEMY_SPEED = 3
 ENEMY_SPAWN_RATE = 100  # The smaller this number, the more often enemies will spawn
 
 # Drop Constants

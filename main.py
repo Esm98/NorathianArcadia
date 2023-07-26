@@ -1,14 +1,14 @@
 import pygame
-from constants import*
+from constants import *
 from player import Player
-from enemy import Enemy
+from enemy import Undead
 from sword import Sword
 from drop import Drop
 from utils import draw_text
 from weapon import Weapon
-from enemy import Undead
 
-
+world_width = 2576
+world_height = 2924
 
 def start_screen(screen):
     running = True
@@ -42,34 +42,45 @@ def game_over_screen(screen):
             if event.type == pygame.KEYUP:
                 running = False
 
+#def camera_offset(player):
+    # This will keep the player at the center of the screen
+    #return -player.rect.centerx + SCREEN_WIDTH // 2, -player.rect.centery + SCREEN_HEIGHT // 2
+def camera_offset(player):
+    # This will keep the player at the center of the screen
+    offset_x = -player.rect.centerx + SCREEN_WIDTH // 2
+    offset_y = -player.rect.centery + SCREEN_HEIGHT // 2
+    
+    # Check if the camera is out of the world's bounds and adjust it if necessary
+    offset_x = min(0, offset_x)  # left side
+    offset_y = min(0, offset_y)  # top side
+    offset_x = max(-(world_width - SCREEN_WIDTH), offset_x)  # right side
+    offset_y = max(-(world_height - SCREEN_HEIGHT), offset_y)  # bottom side
 
-
+    return offset_x, offset_y
 
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    
-    world_width = 2576
-    world_height = 2924
-    start_screen(screen)
 
+    start_screen(screen)
+    
+    # Group for all sprites
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
-
-    swords = pygame.sprite.Group()  
-    drops = pygame.sprite.Group()
     weapons = pygame.sprite.Group()
-    undeads = pygame.sprite.Group()  # New group for drops
-    backgrounds =pygame.sprite.Group()
 
+    # Load images
     spritesheet = pygame.image.load('defaultChar.png')
+    undead_spritesheet = pygame.image.load('decayingSkeleton.png')
+    background = pygame.image.load('befallen_Beta2.png')
+
+    # Create player and enemies
     player = Player(spritesheet)
     player.equipped_weapon = Sword
     all_sprites.add(player)
 
-    undead_spritesheet = pygame.image.load('decayingSkeleton.png')
     undead = Undead(undead_spritesheet, 100, 100, player)
     undead.player = player
     all_sprites.add(undead)
@@ -77,17 +88,15 @@ def main():
 
     enemy_timer = 0
 
-
-
-
-     
-    
-    background = pygame.image.load('befallen_sketch2.png')
-
     running = True
     while running:
-        
-        screen.blit(background,(-1500,-1900))
+        offset_x, offset_y = camera_offset(player)
+        #screen.fill((0,0,0))
+        # Apply the offset to the background
+        screen.blit(background, (offset_x, offset_y))
+        #screen.blit(background,(-1500,-1900))
+
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -96,24 +105,22 @@ def main():
                     if player.equipped_weapon is not None:  # Press space to attack
                         weapon = player.equipped_weapon(player)
                         all_sprites.add(weapon)
-                        weapons.add(weapon)  # Add sword to swords group           
+                        weapons.add(weapon)  # Add sword to swords group
+
         # Spawn enemies
         enemy_timer += 1
         if enemy_timer >= ENEMY_SPAWN_RATE:
-            undead_spritesheet = pygame.image.load('decayingSkeleton.png')
-            enemy = Undead(undead_spritesheet,100,100,player)
+            enemy = Undead(undead_spritesheet, 100, 100, player)
             undead.player = player
             all_sprites.add(undead)
             enemies.add(undead)
             enemy_timer = 0
 
-        player.update(enemies)
+        # Update sprites
         for sprite in all_sprites:
-            if sprite == player:
-                sprite.update(enemies)
-            else:
+            if sprite != player:
                 sprite.update()
-                
+        player.update(enemies)
 
         # Check for collisions between player and enemies
         collisions = pygame.sprite.spritecollide(player, enemies, False)
@@ -121,37 +128,29 @@ def main():
             if enemy.state == 'attack':
                 enemy.attack(player)
 
+        # Weapon and enemies collision
         hits = pygame.sprite.groupcollide(weapons, enemies, True, True)
         for hit in hits:
            # When an enemy is hit, it drops a loot item
             drop = Drop(hit.rect.x, hit.rect.y)
             all_sprites.add(drop)
-            drops.add(drop) 
+
         # Check player's health
         if player.health <= 0 and not player.is_dead:
                 player.is_dead = True
                 player.current_animation = player.animations['death']['die'] 
 
-
         if player.is_dead:
             player.current_animation.update(True)
 
-
+        # Draw everything
+        for sprite in all_sprites:
+            #sprite.draw(screen)
+            sprite.draw(screen, offset_x, offset_y)
         # Draw health bar
-        # Draw health bar
-        health_bar_width = PLAYER_HEALTH * 2  # for example, if each health point corresponds to 2 pixels
+        health_bar_width = PLAYER_HEALTH * 2
         pygame.draw.rect(screen, GREEN, (20, 20, player.health*2, 20))
         pygame.draw.rect(screen, WHITE, (20, 20, PLAYER_HEALTH * 2, 20), 2)
-       
-        # Draw everything
-        #screen.fill((255, 255, 255))
-        for sprite in all_sprites:
-           
-            sprite.draw(screen)
-            
-            
-       
-
 
         pygame.display.flip()
         clock.tick(FPS)
@@ -163,7 +162,6 @@ def main():
             running = False
 
     game_over_screen(screen)
-
     pygame.quit()
 
 if __name__ == "__main__":

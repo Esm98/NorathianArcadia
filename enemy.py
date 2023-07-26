@@ -96,9 +96,14 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.current_animation.frames[self.current_animation.current_frame]
         self.rect = self.image.get_rect(center=self.rect.center)  # Update the rect to match the image's size and position
 
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-        pygame.draw.rect(surface, BLUE,self.hitbox,2)
+    #def draw(self, surface):
+        #surface.blit(self.image, self.rect)
+        #pygame.draw.rect(surface, BLUE,self.hitbox,2)
+
+    def draw(self, surface, offset_x, offset_y):
+        surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
+        pygame.draw.rect(surface, RED, self.hitbox.move(offset_x, offset_y), 2)
+
 
 class Undead(Enemy):
     def __init__(self, spritesheet, x, y,player):

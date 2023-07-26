@@ -23,5 +23,9 @@ class Sword(Weapon):
         if self.lifetime <= 0:
             self.kill()
 
-    def draw(self, surface):
-        surface.blit(self.image,self.rect)
+    #def draw(self, surface):
+        #surface.blit(self.image,self.rect)
+    
+    def draw(self, surface, offset_x, offset_y):
+        surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
+        pygame.draw.rect(surface, RED, self.hit_box.move(offset_x, offset_y), 2)
