@@ -6,6 +6,7 @@ from sword import Sword
 from drop import Drop
 from utils import draw_text
 from weapon import Weapon
+from walls import Wall
 
 world_width = 2576
 world_height = 2924
@@ -86,6 +87,16 @@ def main():
     all_sprites.add(undead)
     enemies.add(undead)
 
+    left = 1171
+    top = 2912
+    width = 2113 - 1171  # right - left
+    height = 5  # since the top and bottom y-coordinate is the same
+    walls = pygame.sprite.Group()
+    wall = Wall(left, top, width, height)
+    walls.add(wall)
+
+
+
     enemy_timer = 0
 
     running = True
@@ -120,7 +131,7 @@ def main():
         for sprite in all_sprites:
             if sprite != player:
                 sprite.update()
-        player.update(enemies)
+        player.update(enemies,walls)
 
         # Check for collisions between player and enemies
         collisions = pygame.sprite.spritecollide(player, enemies, False)

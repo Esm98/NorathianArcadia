@@ -1,7 +1,7 @@
 import pygame
 from constants import *
 from animation import Animation
-
+from walls import Wall
 class Player(pygame.sprite.Sprite):
     def __init__(self, spritesheet):
         super().__init__()
@@ -76,7 +76,7 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
-    def update(self,enemies=None):
+    def update(self,enemies=None,walls=None):
         keys = pygame.key.get_pressed()
 
         dx, dy = 0, 0
@@ -93,10 +93,11 @@ class Player(pygame.sprite.Sprite):
             dy += PLAYER_SPEED
             self.direction = 'down'
 
-        world_width = 2576
+        world_width = 2213
         world_height = 2924
         self.rect.x = max(0, min(self.rect.x, world_width - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, world_height - self.rect.height)) 
+        print(self.rect.x,self.rect.y)
 
         # Attempt to move in the X direction
         new_x = self.rect.x + dx
@@ -116,6 +117,9 @@ class Player(pygame.sprite.Sprite):
 
         # Check for collisions
         collision = any(self.rect.colliderect(enemy.hitbox) for enemy in enemies)
+        collision = any(self.rect.colliderect(wall.rect) for wall in walls)
+        if collision:
+            self.rect.x = old_x
         # If collision occurred, reset y
         if collision:
             self.rect.y = old_y
