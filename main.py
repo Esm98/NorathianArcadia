@@ -7,45 +7,12 @@ from drop import Drop
 from utils import draw_text
 from weapon import Weapon
 from walls import Wall
-
+from GameStateManager import GameStateManager
 world_width = 2576
 world_height = 2924
 
-def start_screen(screen):
-    running = True
-    while running:
-        screen.fill((0,0,0))  # Fill the screen with black
-        draw_text(screen, "Norathian Arcadia", 64, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4)  # Draw the title
-        draw_text(screen, "Press a key to start", 22, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Draw the instructions
-        pygame.display.flip()  # Update the display
 
-        # Event handling
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYUP:
-                running = False   
 
-def game_over_screen(screen):
-    running = True
-    while running:
-        screen.fill((0,0,0))  # Fill the screen with black
-        draw_text(screen, "GAME OVER", 64, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4)  # Draw the game over text
-        draw_text(screen, "Press a key to play again", 22, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Draw the instructions
-        pygame.display.flip()  # Update the display
-
-        # Event handling
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYUP:
-                running = False
-
-#def camera_offset(player):
-    # This will keep the player at the center of the screen
-    #return -player.rect.centerx + SCREEN_WIDTH // 2, -player.rect.centery + SCREEN_HEIGHT // 2
 def camera_offset(player):
     # This will keep the player at the center of the screen
     offset_x = -player.rect.centerx + SCREEN_WIDTH // 2
@@ -65,7 +32,9 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
 
-    start_screen(screen)
+    game_state_manager = GameStateManager(screen)
+    game_state_manager.start_screen()
+
     
     # Group for all sprites
     all_sprites = pygame.sprite.Group()
@@ -77,7 +46,7 @@ def main():
     undead_spritesheet = pygame.image.load('decayingSkeleton.png')
     background = pygame.image.load('befallen_Beta2.png')
 
-    # Create player and enemies
+    
     player = Player(spritesheet)
     player.equipped_weapon = Sword
     all_sprites.add(player)
@@ -87,14 +56,7 @@ def main():
     all_sprites.add(undead)
     enemies.add(undead)
 
-    #left = 1171
-    #top = 2912
-    #width = 2113 - 1171  # right - left
-    #height = 5  # since the top and bottom y-coordinate is the same
-    
-    #walls = pygame.sprite.Group()
-    #wall = Wall(left, top, width, height)
-    #walls.add(wall)
+   
     walls = Wall.create_walls()
     all_sprites.add(walls)
 
@@ -113,14 +75,13 @@ def main():
     pygame.mixer.music.play()
     
     while running:
+        events = pygame.event.get()  # store the events in a variable
+        game_state_manager.handle_events(pygame.event.get())
         offset_x, offset_y = camera_offset(player)
-        #screen.fill((0,0,0))
-        # Apply the offset to the background
+        
         screen.blit(background, (offset_x, offset_y))
-        #screen.blit(background,(-1500,-1900))
-
-        # Event handling
-        for event in pygame.event.get():
+        
+        for event in events:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
