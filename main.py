@@ -8,6 +8,8 @@ from utils import draw_text
 from weapon import Weapon
 from walls import Wall
 from GameStateManager import GameStateManager
+
+import pygame_gui
 world_width = 2576
 world_height = 2924
 
@@ -40,11 +42,14 @@ def main():
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
     weapons = pygame.sprite.Group()
+    drops = pygame.sprite.Group()
+    
 
     # Load images
     spritesheet = pygame.image.load('defaultChar.png')
     undead_spritesheet = pygame.image.load('decayingSkeleton.png')
     background = pygame.image.load('befallen_Beta2.png')
+    item_spritesheet = pygame.image.load('items.png')
 
     
     player = Player(spritesheet)
@@ -60,6 +65,7 @@ def main():
     walls = Wall.create_walls()
     all_sprites.add(walls)
 
+   
 
     enemy_timer = 0
 
@@ -90,7 +96,7 @@ def main():
                         weapon = player.equipped_weapon(player)
                         all_sprites.add(weapon)
                         weapons.add(weapon)  # Add sword to swords group
-
+          
         # Spawn enemies
         enemy_timer += 1
         if enemy_timer >= ENEMY_SPAWN_RATE:
@@ -122,9 +128,9 @@ def main():
         # Weapon and enemies collision
         hits = pygame.sprite.groupcollide(weapons, enemies, True, True)
         for hit in hits:
-           # When an enemy is hit, it drops a loot item
             drop = Drop(hit.rect.x, hit.rect.y)
             all_sprites.add(drop)
+            drops.add(drop)  # Add drop to drops group
 
         # Check player's health
         if player.health <= 0 and not player.is_dead:
@@ -152,7 +158,7 @@ def main():
             pygame.time.wait(3000)
             running = False
 
-    game_over_screen(screen)
+    game_state_manager.game_over_screen()
     pygame.quit()
 
 if __name__ == "__main__":

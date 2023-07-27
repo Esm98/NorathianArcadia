@@ -165,10 +165,10 @@ class Undead(Enemy):
 
             # Check distance to player
             if distance_to_player <= self.agro_radius:
-                print('Now in Attack state')
+                #print('Now in Attack state')
                 self.state = 'attack'
             else:
-                print('Now in Patrol state')
+                #print('Now in Patrol state')
                 self.state = 'patrol'
         if self.state == 'patrol':
             if not self.can_patrol:

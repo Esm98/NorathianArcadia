@@ -97,7 +97,8 @@ class Player(pygame.sprite.Sprite):
         world_height = 2924
         self.rect.x = max(0, min(self.rect.x, world_width - self.rect.width))
         self.rect.y = max(0, min(self.rect.y, world_height - self.rect.height)) 
-        print(self.rect.x,self.rect.y)
+        #uncomment for player location
+        #print(self.rect.x,self.rect.y)
 
         # Attempt to move in the X direction
         new_x = self.rect.x + dx
