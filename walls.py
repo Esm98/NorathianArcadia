@@ -27,13 +27,17 @@ class Wall(pygame.sprite.Sprite):
         # Add more walls as needed...
         wall3 = Wall(1810, 2377,1,220)
         wall4 = Wall(1813, 2377,261+45,1)
-        wall5 = Wall(1507,2377,1,200)
+        wall5 = Wall(1507,0,1,2700)
         wall6 = Wall(2119,2377,1,80)
         wall6 = Wall(1813,2560+64,2113-1813,1)
         wall6 = Wall(1813,2560+64,2160-1813,1)
         wall7 = Wall(2120,2503,1,2584-2503)
         wall8 = Wall(2120,2380,1,50)
-        wall9 = Wall(1804, 2191, 2149-1747, 120)  
+        wall9 = Wall(1804, 2191, 2149-1747, 120)
+        wall10 = Wall(1171, 2650, 1519-1174+20, 135)  
+        wall11 = Wall(1510,1924,1000,1)
+        wall12 = Wall(2210, 0, 1, 3000) 
+        wall13 = Wall(1171, 2750, 1, 150)
         # Add to the walls group
         walls.add(wall1)
         walls.add(wall2)
@@ -44,6 +48,10 @@ class Wall(pygame.sprite.Sprite):
         walls.add(wall7)
         walls.add(wall8)
         walls.add(wall9)
+        walls.add(wall10)
+        walls.add(wall11)
+        walls.add(wall12)
+        walls.add(wall13)
         # Add more walls to the group as needed...
 
         return walls

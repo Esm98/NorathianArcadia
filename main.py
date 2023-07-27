@@ -96,12 +96,22 @@ def main():
     #wall = Wall(left, top, width, height)
     #walls.add(wall)
     walls = Wall.create_walls()
-    #all_sprites.add(walls)
+    all_sprites.add(walls)
 
 
     enemy_timer = 0
 
     running = True
+    pygame.mixer.init()
+    audio_file_path = 'E:/gameMusic/NGGYU.wav'
+    pygame.mixer.music.load(audio_file_path)
+
+# Set the volume of the music to 25% of its current volume
+    pygame.mixer.music.set_volume(0.10)
+
+# Play the music
+    pygame.mixer.music.play()
+    
     while running:
         offset_x, offset_y = camera_offset(player)
         #screen.fill((0,0,0))
@@ -146,6 +156,7 @@ def main():
         for enemy in collisions:
             if enemy.state == 'attack':
                 enemy.attack(player)
+            
 
         # Weapon and enemies collision
         hits = pygame.sprite.groupcollide(weapons, enemies, True, True)

@@ -116,12 +116,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = new_y
 
         # Check for collisions
-        collision = any(self.rect.colliderect(enemy.hitbox) for enemy in enemies)
-        collision = any(self.rect.colliderect(wall.rect) for wall in walls)
-        if collision:
+        collision_with_enemy = any(self.rect.colliderect(enemy.hitbox) for enemy in enemies)
+        collision_with_wall = any(self.rect.colliderect(wall.rect) for wall in walls)
+
+        # If collision occurred, reset position
+        if collision_with_enemy or collision_with_wall:
             self.rect.x = old_x
-        # If collision occurred, reset y
-        if collision:
             self.rect.y = old_y
 
         self.hitbox.center = self.rect.center

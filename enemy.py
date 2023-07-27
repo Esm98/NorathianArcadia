@@ -54,7 +54,15 @@ class Enemy(pygame.sprite.Sprite):
             },
             'death': {
                 'die': Animation(spritesheet,0, 20, 5)
+            },
+            'idle': {
+                'up': Animation(spritesheet,0, 8, 1),
+                'down': Animation(spritesheet,0, 10, 1),
+                'left': Animation(spritesheet,0, 9, 1),
+                'right': Animation(spritesheet,0, 11, 1)
             }
+            
+            
 
         }
         
@@ -108,7 +116,7 @@ class Enemy(pygame.sprite.Sprite):
 
 class Undead(Enemy):
     dead_enemies = 0
-    def __init__(self, spritesheet, x, y,player):
+    def __init__(self, spritesheet, x, y,player,can_patrol=True):
         super().__init__(spritesheet, x, y,player)
         
         self.state = 'patrol'
@@ -127,16 +135,16 @@ class Undead(Enemy):
         self.world_height = 2924
         self.patrol_direction = Vector2(1, 0)  # Initially move to the right
         self.patrol_distance = 0  # Initially we haven't moved yet
-       
+        self.can_patrol = can_patrol
     def create_undeads(player, undead_spritesheet):
         undeads = pygame.sprite.Group()
 
         
 
-        undead1 = Undead(undead_spritesheet, 1597, 2815, player)  
-        undead2 = Undead(undead_spritesheet, 1597, 2500, player)  
-        undead3 = Undead(undead_spritesheet, 1597, 2000, player) 
-        undead4 = Undead(undead_spritesheet, 1597, 1500, player)  
+        undead1 = Undead(undead_spritesheet, 1597, 2815, player,can_patrol = True)  
+        undead2 = Undead(undead_spritesheet, 1720, 2326, player,can_patrol= False)  
+        undead3 = Undead(undead_spritesheet, 1711, 2149, player,can_patrol = False) 
+        undead4 = Undead(undead_spritesheet, 1860, 2400, player,can_patrol = False)  
 
         undeads.add(undead1)
         undeads.add(undead2)
@@ -153,18 +161,24 @@ class Undead(Enemy):
             self_position = Vector2(self.rect.x, self.rect.y)
 
             distance_to_player = player_position.distance_to(self_position)
-            print(f"Distance to player: {distance_to_player}")  # Debug line
+            
 
             # Check distance to player
             if distance_to_player <= self.agro_radius:
-                print("Switching to attack state")  # Debug line
+                print('Now in Attack state')
                 self.state = 'attack'
             else:
-                print("Switching to patrol state")  # Debug line
+                print('Now in Patrol state')
                 self.state = 'patrol'
-
-
         if self.state == 'patrol':
+            if not self.can_patrol:
+                self.current_animation = self.animations['idle'][self.direction]  # Use the walk animation as the idle animation
+                self.current_animation.current_frame = 0 # Set the frame to the first frame
+                self.update_image()  # Only patrol if the enemy can patrol
+                return
+
+
+            self.state == 'patrol'
             old_x, old_y = self.rect.x, self.rect.y
             self.rect.x += self.patrol_direction.x * ENEMY_SPEED
             self.rect.y += self.patrol_direction.y * ENEMY_SPEED
