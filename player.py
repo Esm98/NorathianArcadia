@@ -241,7 +241,7 @@ class Player(pygame.sprite.Sprite):
         #pygame.draw.rect(surface,RED, self.hitbox,2)
 
     def draw(self, surface, offset_x, offset_y):
-        print(f"Drawing player with image: {self.image}")
+        
         surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
         pygame.draw.rect(surface, RED, self.hitbox.move(offset_x, offset_y), 2)
     
