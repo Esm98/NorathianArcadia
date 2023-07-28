@@ -90,7 +90,7 @@ def main():
         if inventory.inventory_open:
             inventory.inventory_screen.fill((0, 0, 0, 128))  # Clear the inventory screen and fill with a semi-transparent black color
             player.inventory.draw(inventory.inventory_screen)  # Draw the inventory
-            screen.blit(inventory.inventory_screen, (0, 0))  # Draw the inventory screen over the game screen
+            screen.blit(inventory.inventory_screen, (0, SCREEN_HEIGHT-inventory.inventory_screen.get_height()))  # Draw the inventory screen over the game screen
         
         for event in events:
             if event.type == pygame.QUIT:
@@ -161,7 +161,7 @@ def main():
         # Draw everything
         for sprite in all_sprites:
             if inventory.inventory_open:
-                screen.blit(inventory.inventory_screen,(0,0))
+                screen.blit(inventory.inventory_screen, (0, SCREEN_HEIGHT-inventory.inventory_screen.get_height()))
             sprite.draw(screen, offset_x, offset_y)
         # Draw health bar
         health_bar_width = PLAYER_HEALTH * 2
