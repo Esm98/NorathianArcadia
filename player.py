@@ -20,8 +20,8 @@ class Player(pygame.sprite.Sprite):
 
         
         self.rect = pygame.Rect(player_initial_x, player_initial_y, 64, 64)
-        self.hitbox = self.image.get_rect().inflate(-10, +10)  # Decrease the size of the hitbox by 10 pixels on each side
-
+        #self.hitbox = self.image.get_rect().inflate(-10, +10)  # Decrease the size of the hitbox by 10 pixels on each side
+        self.hitbox = self.rect
 
         self.health = PLAYER_HEALTH
         self.is_dead = False
@@ -243,5 +243,5 @@ class Player(pygame.sprite.Sprite):
     def draw(self, surface, offset_x, offset_y):
         
         surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
-        pygame.draw.rect(surface, RED, self.hitbox.move(offset_x, offset_y), 2)
+        pygame.draw.rect(surface, YELLOW, self.hitbox.move(offset_x, offset_y), 2)
     

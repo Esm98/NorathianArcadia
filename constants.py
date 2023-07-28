@@ -51,6 +51,7 @@ PLAYER_SPRITESHEETS = {
     ','.join(sorted(['helmet', 'chestPlate', 'legs'])): 'HCL.png',
     ','.join(sorted(['helmet', 'chestPlate', 'longSword'])): 'HCS.png',
     ','.join(sorted(['helmet', 'arms', 'legs'])): 'HAL.png',
+    ','.join(sorted(['helmet', 'arms', 'longSword'])): 'HAS.png',
     ','.join(sorted(['helmet', 'legs', 'longSword'])): 'HLS.png',
     ','.join(sorted(['chestPlate', 'arms', 'legs'])): 'CAL.png',
     ','.join(sorted(['chestPlate', 'arms', 'longSword'])): 'CAS.png',
