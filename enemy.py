@@ -90,12 +90,12 @@ class Enemy(pygame.sprite.Sprite):
             self.is_attacking = True  # This was originally mis-capitalized
             self.attack_timer = pygame.time.get_ticks()  # start the timer when we attack
             player.health -= self.damage
-            print("Enemy Attacked!")
+            #print("Enemy Attacked!")
             self.last_attack_time = current_time
         else:
             if pygame.time.get_ticks() - self.attack_timer > len(self.current_animation.frames) * self.current_animation.frame_delay:  # Reset is_attacking when the animation has played
                 self.is_attacking = False
-                print("attack delay not over yet")
+                #print("attack delay not over yet")
 
 
 

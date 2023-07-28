@@ -5,10 +5,11 @@ import random
 class Drop(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = self.create_item()
+        self.image,self.name = self.create_item()
         self.rect = self.image.get_rect(center=(x, y))
         self.loot = random.choice(LOOT)
         self.hitbox = self.image.get_rect().inflate(-20, -20)
+        
 
 
     #def draw(self, surface):
@@ -22,8 +23,10 @@ class Drop(pygame.sprite.Sprite):
         chosen_item = random.choice(items)
         print(chosen_item)
         try:
-            return pygame.image.load(chosen_item)
+            image = pygame.image.load(chosen_item)
         except pygame.error as e:
             print(f"Unable to load image: {chosen_item}")
             print(e)
-            return pygame.Surface((0, 0))  # return an empty surface in case of an error
+            image = pygame.Surface((0, 0))  # return an empty surface in case of an error
+
+        return image, chosen_item.split('.')[0] # returns the item name without the .png extension

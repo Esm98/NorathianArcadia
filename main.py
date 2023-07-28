@@ -51,8 +51,9 @@ def main():
     background = pygame.image.load('befallen_Beta2.png')
     item_spritesheet = pygame.image.load('items.png')
 
-    
-    player = Player(spritesheet)
+    test_image = pygame.image.load('A.png')
+    print(test_image)
+    player = Player()
     player.equipped_weapon = Sword
     all_sprites.add(player)
 
@@ -160,9 +161,10 @@ def main():
 
         # Draw everything
         for sprite in all_sprites:
-            if inventory.inventory_open:
-                screen.blit(inventory.inventory_screen, (0, SCREEN_HEIGHT-inventory.inventory_screen.get_height()))
             sprite.draw(screen, offset_x, offset_y)
+        if inventory.inventory_open:
+            screen.blit(inventory.inventory_screen, (0, SCREEN_HEIGHT-inventory.inventory_screen.get_height()))
+        
         # Draw health bar
         health_bar_width = PLAYER_HEALTH * 2
         pygame.draw.rect(screen, GREEN, (20, 20, player.health*2, 20))
