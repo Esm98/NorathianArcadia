@@ -2,6 +2,7 @@ import pygame
 from constants import *
 from animation import Animation
 from walls import Wall
+from inventory import Inventory
 class Player(pygame.sprite.Sprite):
     def __init__(self, spritesheet):
         super().__init__()
@@ -30,7 +31,7 @@ class Player(pygame.sprite.Sprite):
 
         self.death_timer = 0
        
-
+        self.inventory = Inventory()
         self.animations = {
             'walk': {
                 'up': Animation(spritesheet,0, 8, 8),
@@ -69,6 +70,11 @@ class Player(pygame.sprite.Sprite):
         }
         
         self.current_animation = self.animations['walk']['down']  # Initial animation
+
+
+    def pick_up(self,drop):
+        self.inventory.add_item(drop)
+        drop.kill()
 
 
     def is_death_animation_finished(self):

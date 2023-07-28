@@ -8,7 +8,7 @@ from utils import draw_text
 from weapon import Weapon
 from walls import Wall
 from GameStateManager import GameStateManager
-
+from inventory import Inventory
 import pygame_gui
 world_width = 2576
 world_height = 2924
@@ -37,7 +37,7 @@ def main():
     game_state_manager = GameStateManager(screen)
     game_state_manager.start_screen()
 
-    
+    inventory = Inventory()
     # Group for all sprites
     all_sprites = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
@@ -87,6 +87,11 @@ def main():
         
         screen.blit(background, (offset_x, offset_y))
         
+        if inventory.inventory_open:
+            inventory.inventory_screen.fill((0, 0, 0, 128))  # Clear the inventory screen and fill with a semi-transparent black color
+            player.inventory.draw(inventory.inventory_screen)  # Draw the inventory
+            screen.blit(inventory.inventory_screen, (0, 0))  # Draw the inventory screen over the game screen
+        
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
@@ -96,6 +101,15 @@ def main():
                         weapon = player.equipped_weapon(player)
                         all_sprites.add(weapon)
                         weapons.add(weapon)  # Add sword to swords group
+                if event.key == pygame.K_i:
+                    inventory.inventory_open = not inventory.inventory_open
+            if event.type == pygame.MOUSEBUTTONDOWN and inventory.inventory_open:
+            # Get the clicked item
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                clicked_item_index = mouse_x // 64  # Get the index of the clicked item (assuming items are 64x64 pixels)
+                clicked_item = player.inventory.get_item(clicked_item_index)
+                if clicked_item is not None:
+                    player.equip(clicked_item)
           
         # Spawn enemies
         enemy_timer += 1
@@ -117,7 +131,11 @@ def main():
         player.update(enemies,walls)
 
 
-      
+        drop_collisions = pygame.sprite.spritecollide(player,drops,False)
+        for drop in drop_collisions:
+            distance = pygame.math.Vector2(drop.rect.center).distance_to(player.rect.center)
+            if distance < 10:  # PICKUP_RADIUS is the distance within which the player can pick up drops
+                player.pick_up(drop)
         # Check for collisions between player and enemies
         collisions = pygame.sprite.spritecollide(player, enemies, False)
         for enemy in collisions:
@@ -142,7 +160,8 @@ def main():
 
         # Draw everything
         for sprite in all_sprites:
-            #sprite.draw(screen)
+            if inventory.inventory_open:
+                screen.blit(inventory.inventory_screen,(0,0))
             sprite.draw(screen, offset_x, offset_y)
         # Draw health bar
         health_bar_width = PLAYER_HEALTH * 2

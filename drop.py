@@ -8,7 +8,7 @@ class Drop(pygame.sprite.Sprite):
         self.image = self.create_item()
         self.rect = self.image.get_rect(center=(x, y))
         self.loot = random.choice(LOOT)
-        self.hitbox = self.image.get_rect().inflate(-10, +10)
+        self.hitbox = self.image.get_rect().inflate(-20, -20)
 
 
     #def draw(self, surface):
