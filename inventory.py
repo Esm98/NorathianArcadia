@@ -3,7 +3,7 @@ class Inventory:
     def __init__(self):
         self.items = []
         self.inventory_open = False
-        self.inventory_screen = pygame.Surface((200,200))
+        self.inventory_screen = pygame.Surface((400,200))
         self.columns = 5  # the number of columns in the inventory
         self.margin = 5  # the space between the edge of the inventory screen and the grid
         self.item_size = 64  # the size of each inventory slot, set to match your inventory item images
