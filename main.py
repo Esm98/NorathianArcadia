@@ -98,7 +98,7 @@ def main():
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
-                    if player.equipped_weapon is not None:  # Press space to attack
+                    if player.equipped_weapon is not None:  # 
                         weapon = player.equipped_weapon(player)
                         all_sprites.add(weapon)
                         weapons.add(weapon)  # Add sword to swords group

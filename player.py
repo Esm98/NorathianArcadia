@@ -213,10 +213,10 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_q]:
                 self.current_animation = self.animations['swing'][self.direction]
             elif keys[pygame.K_e]:
-            # Assuming you have 'shoot' animation
+           
                 self.current_animation = self.animations['shoot'][self.direction]
             elif keys[pygame.K_r]:
-            # Assuming you have 'cast' animation
+          
                 self.current_animation = self.animations['cast'][self.direction]
             elif keys[pygame.K_f]:
                 self.current_animation = self.animations['thrust'][self.direction]

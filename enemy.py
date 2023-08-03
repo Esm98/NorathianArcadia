@@ -87,7 +87,7 @@ class Enemy(pygame.sprite.Sprite):
     def attack(self, player):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack_time > self.attack_delay:
-            self.is_attacking = True  # This was originally mis-capitalized
+            self.is_attacking = True  
             self.attack_timer = pygame.time.get_ticks()  # start the timer when we attack
             player.health -= self.damage
             #print("Enemy Attacked!")
