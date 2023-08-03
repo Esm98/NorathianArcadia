@@ -1,7 +1,7 @@
 import pygame
 
 # Constants
-SPRITE_SHEET_PATH = 'defaultChar.png'  # Replace with your sprite sheet path
+SPRITE_SHEET_PATH = 'defaultChar.png' 
 SPRITE_WIDTH = 64
 SPRITE_HEIGHT = 64
 
