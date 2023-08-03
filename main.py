@@ -64,7 +64,7 @@ def main():
 
    
     walls = Wall.create_walls()
-    all_sprites.add(walls)
+    #all_sprites.add(walls)
 
    
 

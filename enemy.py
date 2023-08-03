@@ -111,7 +111,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self, surface, offset_x, offset_y):
         surface.blit(self.image, (self.rect.x + offset_x, self.rect.y + offset_y))
-        pygame.draw.rect(surface, BLUE, self.hitbox.move(offset_x, offset_y), 2)
+        #pygame.draw.rect(surface, BLUE, self.hitbox.move(offset_x, offset_y), 2)
 
 
 class Undead(Enemy):
